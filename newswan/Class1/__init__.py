@@ -21,6 +21,8 @@ from tqdm.auto import tqdm, trange
 from concurrent.futures import ThreadPoolExecutor
 import scipy.stats as stats
 from scipy.optimize import curve_fit
+
+
 class parametricValue(ABC):
     def __init__(self , x , y):
         self._y = y
@@ -255,6 +257,11 @@ class parametricValueSympy(parametricValue):
         else:
             return parametricValueSympy(self._x , self._y/other)
 
+        
+        
+        
+        
+        
 class binning:
     def __init__(self , min : float , max : float , representative : float = float('inf') ):
         self._min = min
@@ -303,6 +310,8 @@ class binning:
         return "({0},{1}:{2})".format(self.min, self.max , self.representative)
 
 
+    
+    
 
 class discretepdf:
     def __init__(self , name : str , vals : dict , paramName : str = "" , valType : type = parametricValue , unity = True):
@@ -521,6 +530,9 @@ class discretepdf:
             del a
             del b
 
+            
+            
+            
 
 class NLL:
     def normalize(self):
@@ -627,6 +639,10 @@ class NLL:
         if self._pred is not None:
             del self._pred
 
+            
+            
+            
+            
 class lumiDist(ABC,discretepdf):
     def __init__(self , name : str, vals : dict , 
                  min_pu : int , max_pu : int ,
@@ -668,6 +684,11 @@ class lumiDist(ABC,discretepdf):
         del self.PUDist
         #super( type(self) , self).__del__()
 
+        
+        
+        
+        
+        
 class lumiDistSympyLaplace(lumiDist):
     def __init__(self , name : str , vals : dict , max_pu : int):
         super(lumiDistSympyLaplace , self).__init__(name , vals , 0 , max_pu , 0 , 1000 , -1)
@@ -707,6 +728,12 @@ class lumiDistSympyLaplace(lumiDist):
     def PUDist(self):
         del self._PUDist
     
+    
+    
+    
+    
+    
+    
 class lumiDistNumpy(lumiDist):
     def __init__(self , name : str , vals : dict , max_pu : int , xsecs : np.ndarray ,silent=False):
         super(lumiDistNumpy , self).__init__(name , vals , 0 , max_pu , xsecs.min() , xsecs.max() , len(xsecs) )
@@ -737,6 +764,9 @@ class lumiDistNumpy(lumiDist):
         del self._PUDist
         pass
 
+    
+    
+    
     
 class SimulationVSPu(discretepdf):
     
