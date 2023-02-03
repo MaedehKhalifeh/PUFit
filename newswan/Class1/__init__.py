@@ -1299,7 +1299,14 @@ class RunInfo :
             g.update_layout(legend_xanchor="left" , legend_orientation="h", showlegend=True)
             for sr in self._subRuns if subRuns > 0 else self._subRunsSameLumiBins:
                 g = sr.plot_lumi_distribution(g, subRuns , colorLumiScale , density=density )
+                ###
                 
+        g.update_layout(
+                        title="Distribution of BX luminosity",
+                        xaxis_title='luminosity (1/mb 1/25ns)',
+                        yaxis_title="probability",
+                        legend_title="Runs",
+                        )        
         return g
         
     
