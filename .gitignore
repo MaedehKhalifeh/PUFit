@@ -1,0 +1,11 @@
+*.root
+*.csv
+*.so
+*.pcm
+*.o
+*.png
+*.pdf
+workspace.code-workspace
+.vscode/
+__pycache__
+
