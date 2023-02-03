@@ -460,7 +460,8 @@ class discretepdf:
         if g is None:
             g = go.Figure()
         if label is None:
-            label = self.name
+#             label = self.name
+              label = 'puDist = {0}'.format(param)
 #             if self.paramName != "":
 #                 label += ', {0}={1}'.format(self.paramName , param)
               
@@ -739,6 +740,7 @@ class lumiDistNumpy(lumiDist):
         super(lumiDistNumpy , self).__init__(name , vals , 0 , max_pu , xsecs.min() , xsecs.max() , len(xsecs) )
 #         print(name)
         self.pu_prob_for_sigma = {}
+#         self.xsecs = xsecs
         n_factoriel = 1
         for n in range(self.max_pu+1):
             if n != 0:
@@ -746,7 +748,7 @@ class lumiDistNumpy(lumiDist):
 
             vals_1 = np.array([np.multiply( np.exp(-b.representative*xsecs),np.power(b.representative*xsecs,n))*v()*b.length/n_factoriel for b,v in self.vals])
             vals = np.sum(vals_1,0)
-            #print(vals)
+#             print(vals)
             self.pu_prob_for_sigma[(n-0.5,n+0.5)] = parametricValueNumpy(xsecs , vals)
 
             if not silent:
