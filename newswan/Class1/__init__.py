@@ -460,8 +460,8 @@ class discretepdf:
         if g is None:
             g = go.Figure()
         if label is None:
-#             label = self.name
-              label = 'puDist = {0}'.format(param)
+            label = self.name
+#               label = 'puDist = {0}'.format(param)
 #             if self.paramName != "":
 #                 label += ', {0}={1}'.format(self.paramName , param)
               
@@ -1325,7 +1325,7 @@ class RunInfo :
             else:
                 lh.PUDist.plot(param=xsec , g=g , scatterOpts={'name' : theName})
         g.update_layout(
-        title="PU distribution for sigma = 70",
+        title="PU distribution for sigma = {0}".format(xsec),
         xaxis_title='number of PU',
         yaxis_title="probability",
         legend_title="Luminosity bins"
