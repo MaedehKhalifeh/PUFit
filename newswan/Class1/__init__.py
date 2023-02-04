@@ -1295,8 +1295,9 @@ class RunInfo :
         g = self.lumi_distribution.plot(g=g, scatterOpts=dict(mode='markers',
                                              marker=self.plotMarkerStyle(colorLumiScale),
                                                              line=dict(color=linecolor)) , density=density )
+        
         if subRuns:
-            g.update_layout(legend_xanchor="left" , legend_orientation="h", showlegend=True)
+            g.update_layout(legend_title="Runs",legend_xanchor="left" , legend_orientation="h", showlegend=True)
             for sr in self._subRuns if subRuns > 0 else self._subRunsSameLumiBins:
                 g = sr.plot_lumi_distribution(g, subRuns , colorLumiScale , density=density )
                 ###
