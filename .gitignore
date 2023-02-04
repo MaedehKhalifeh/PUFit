@@ -8,4 +8,5 @@ workspace.code-workspace
 .vscode/
 __pycache__
 .sys*
-*checkpoints
+_check*
+.swan*
