@@ -3,10 +3,11 @@ allInfo = {'/eos/home-h/helfaham/PU_work/UL/after_bx/2016/ZeroBiasF.root': [2787
 def GetRunInformation(run):
     for f,runs in allInfo.items():
         if run in runs:
-            parts = f.split('/')
-            era = parts[-1].split('.')[0][-1]
-            year = parts[-2]
-            return year, era
+            if 'ZeroBias' in f:
+                parts = f.split('/')
+                era = parts[-1].split('.')[0][-1]
+                year = parts[-2]
+                return year, era
     return None,None
 
 def GetAllRuns(year , era):
@@ -16,6 +17,7 @@ def GetAllEras(year):
     ret = []
     for f in allInfo:
         if str(year) in f:
-            ret.append( f.split('.')[0][-1] )
+            if 'ZeroBias' in f:
+                ret.append( f.split('.')[0][-1] )
             
     return ret
