@@ -8,6 +8,8 @@ if not sys.warnoptions:
 import plotly
 import plotly.graph_objects as go
 import plotly.express as px
+import matplotlib.pyplot as plt
+
 
 from plotly.subplots import make_subplots
 from typing import overload
@@ -982,6 +984,7 @@ class RunInfo :
         self.lumi_hists = []
         self.data_hists = []
         
+        
         self._statusBar.set_description('loading'.ljust(RunInfo.progress_bar_des_l))
         if _vals_ is None:
             self._isSecondHand = False
@@ -1007,6 +1010,15 @@ class RunInfo :
         self._statusBar.update(1)
      
         self._covmatrix = []
+        
+        ####
+        
+#         print('lumi quantiles = {0}'.format(lumi_quantiles))
+#         print('lumi limits = {0}'.format(lumi_limits))
+        
+        
+        ####
+        
         for q_i in range(len(lumi_quantiles)-1):
             self._statusBar.set_description('q{0} pu dist'.format(q_i).ljust(RunInfo.progress_bar_des_l))
 
@@ -1063,6 +1075,7 @@ class RunInfo :
         del self._statusBar
         if self.run == 0:
             del self.vals
+        
 
     def __del__(self):
         for r in self._subRuns + self._subRunsSameLumiBins:
@@ -1074,6 +1087,9 @@ class RunInfo :
         for lh in self.lumi_hists:
             del lh
        
+    
+    
+    
     @property
     def sigmaLumi(self) -> list:
         return [math.sqrt(self._covmatrix[i][0][0]) for i in range(self.nLumiBins+1) ]
@@ -1248,6 +1264,18 @@ class RunInfo :
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #00-Simulation plot details:
     
     def setSimulation(self, sim : SimulationVSPu , sub_runs : bool = True ) :
@@ -1324,10 +1352,11 @@ class RunInfo :
             
     
     def plotPUDists(self , xsec:float , g=None) :
-        m = 1
+
         for lh in self.lumi_hists:
-            theName = "Lumi bin = {0}".format(m)
-            m += 1
+            theName = "Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
+            
+            
             if g is None:
                 g = lh.PUDist.plot(param=xsec , scatterOpts={'name' : theName})
             else:
@@ -1336,7 +1365,8 @@ class RunInfo :
         title="PU distribution for sigma = {0}".format(xsec),
         xaxis_title='number of PU',
         yaxis_title="probability",
-        legend_title="Luminosity bins"
+        legend_title= 'Luminosity bins (1/nb 1/s)',
+        font_family="Serif", font_size=14
         )                
         return g
     
@@ -1353,7 +1383,7 @@ class RunInfo :
         n = self.nLumiBins
         if self.parentRun is None:
             g = make_subplots(rows=(self.nLumiBins//2) + (self.nLumiBins%2), cols=2 , 
-                              subplot_titles = ['Lumi bin = {0}'.format(i+1) for i in np.arange(len(self.lumi_hists))]
+                              subplot_titles = ["Lumi bin = ({0:.3f} , {1:.3f}) (1/nb 1/s) ".format(lh.min*40 , lh.max*40) for lh in self.lumi_hists]
                              )
         row = 1
         col = 1
@@ -1395,7 +1425,7 @@ class RunInfo :
         n = self.nLumiBins
         #print('number of luminosity bins = {0}'.format(n))
         fig = make_subplots(rows=(self.nLumiBins//2) + (self.nLumiBins%2), cols=2,
-                            subplot_titles = ['Lumi bin = {0}'.format(i+1) for i in np.arange(len(self.lumi_hists))]
+                            subplot_titles = ["Lumi bin = ({0:.3f} , {1:.3f}) (1/nb 1/s) ".format(lh.min*40 , lh.max*40) for lh in self.lumi_hists]
                            )          
                            
         row = 1
@@ -1412,8 +1442,8 @@ class RunInfo :
 
                 
         fig.update_layout(
-        title="PU prediction for different cross sections in {0} different lumi bins ".format(self.nLumiBins),
-        legend_title="Different Cross Sections",
+        title="{0} prediction for different cross sections in {1} different lumi bins ".format( self._vname , self.nLumiBins),
+        legend_title="Different Cross Sections (mb)",
         )
 
         fig.update_yaxes(title_text="Probability")
@@ -1434,7 +1464,7 @@ class RunInfo :
     def plotRunPredictions(self , xsec:float , zoom : bool= True , fig = None):
         if self.parentRun is None:
             fig = make_subplots(rows=(self.nLumiBins//2) + (self.nLumiBins%2), cols=2, 
-                                subplot_titles = ['Lumi bin = {0}'.format(i+1) for i in np.arange(len(self.lumi_hists))]
+                                subplot_titles = ["Lumi bin = ({0:.3f} , {1:.3f}) (1/nb 1/s) ".format(lh.min*40 , lh.max*40) for lh in self.lumi_hists]
                                )
         row = 1
         col = 1
@@ -1451,7 +1481,7 @@ class RunInfo :
             sr.plotRunPredictions(xsec , zoom , fig)
             
         fig.update_layout(
-        title= ' {0} prediction for Xsec = {1} '.format(self._vname , xsec) ,
+        title= ' {0} prediction for Xsec = {1} (mb)'.format(self._vname , xsec) ,
         legend_title="Runs",
         )
         fig.update_yaxes(title_text= 'Number of Events')
@@ -1481,10 +1511,10 @@ class RunInfo :
         K[2] = title2
         K[3] = title3
         p = 3
-        for j in range(1, self.nLumiBins+1):
+        for lh in self.lumi_hists:
             for m in range(1,cols+1):
                 p+=1
-                title = "NLL for Lumi bin = {0} ".format(j)
+                title = "NLL for Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
                 if m == 1:
                     n = ''
                 elif m == 2:
@@ -1554,11 +1584,11 @@ class RunInfo :
         
             
         for i in range(1,3+1):
-            g['layout']['xaxis{0}'.format(i)]['title']='Lumi Bin'
-            g['layout']['yaxis{0}'.format(i)]['title']='Cross Section'
+            g['layout']['xaxis{0}'.format(i)]['title']='Lumi Bin (1/mb 1/25ns)'
+            g['layout']['yaxis{0}'.format(i)]['title']='Cross Section (mb)'
             
         for i in range(4,nplots+1):
-            g['layout']['xaxis{0}'.format(i)]['title']='Cross Section'
+            g['layout']['xaxis{0}'.format(i)]['title']='Cross Section (mb)'
             g['layout']['yaxis{0}'.format(i)]['title']='NLL'
 
         return g
@@ -1576,22 +1606,23 @@ class RunInfo :
     
     def postFitPlots(self):
         fig = make_subplots(rows=(self.nLumiBins//2) + (self.nLumiBins%2), cols=2,
-                           subplot_titles = ['Lumi bin = {0}'.format(i+1) for i in np.arange(len(self.lumi_hists))]
+                           subplot_titles = ["Lumi bin = ({0:.3f} , {1:.3f}) (1/nb 1/s) ".format(lh.min*40 , lh.max*40) for lh in self.lumi_hists]
                            )
         row = 1
         col = 1
         for i in range(self.nLumiBins):
             
+            lh = self.lumi_hists[i]
             #data:
             dh = self.data_hists[i]
-            theName1 = "data for lumi bin = {0}".format(i+1)
+            theName1 = "data for Lumi bin = ({0:.3f} , {1:.3f})".format(lh.min*40 , lh.max*40)
             dh.plot(g=fig , traceOpts={'row':row, 'col':col} , 
 #                     scatterOpts=dict( mode='markers',marker=dict(color='black',size=6 ))
                     scatterOpts={'mode':'markers' ,'marker_color':'black' , 'marker_size':6  , 'name':theName1 }
                    )
             
             #simulation:
-            theName2 = 'Simulation for lumi bin = {0}'.format(i+1)
+            theName2 = 'Simulation for Lumi bin = ({0:.3f} , {1:.3f})'.format(lh.min*40 , lh.max*40)
             self.predictions[i].plot(param=self.fitResults[i].bestFit , g=fig ,
                                            traceOpts={'row':row, 'col':col} , norm=dh.integral() ,
                                            scatterOpts={'line_color':RunInfo.colorList()[int(i*100)%len(RunInfo.colorList())] , 'name':theName2 })
@@ -1623,7 +1654,8 @@ class RunInfo :
         col = 1
         m = 1
         for i in range(self.nLumiBins):
-            theName = "Lumi bin = {0}".format(m)
+            lh = self.lumi_hists[i]
+            theName = "Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
             m += 1
             dh = self.data_hists[i]
             norm=int( dh.integral() )
@@ -1649,7 +1681,7 @@ class RunInfo :
         title="Pull plot for {0}".format(self._vname),
         xaxis_title=self._vname,
         yaxis_title="data - simulation",
-        legend_title="Luminosity bins"
+        legend_title="Luminosity bins (1/nb 1/s)"
         )      
         
         
@@ -1670,7 +1702,8 @@ class RunInfo :
         col = 1
         m = 1
         for i in range(self.nLumiBins):
-            theName = "Lumi bin = {0}".format(m)
+            lh = self.lumi_hists[i]
+            theName = "Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
             m += 1
             dh = self.data_hists[i]
             norm=int( dh.integral() )
@@ -1708,7 +1741,7 @@ class RunInfo :
         title="Nadjieh Pull plot for {0}".format(self._vname),
         xaxis_title=self._vname,
         yaxis_title="data - simulation",
-        legend_title="Luminosity bins"
+        legend_title="Luminosity bins (1/nb 1/s)"
         )
         
         return fig
@@ -1766,8 +1799,8 @@ class RunInfo :
         
         g.update_layout(
         title="best fit for cross section (total runs)",
-        xaxis_title='Lumi Bin',
-        yaxis_title="Cross Section",
+        xaxis_title='Lumi Bin (1/mb 1/25ns)',
+        yaxis_title="Cross Section (mb)",
         legend_title="Runs"
         )
         return g
@@ -1831,8 +1864,8 @@ class RunInfo :
         
         g.update_layout(
         title="best fit for cross section (total runs) + correlation",
-        xaxis_title='Lumi Bin',
-        yaxis_title="Cross Section",
+        xaxis_title='Lumi Bin (1/mb 1/25ns)',
+        yaxis_title="Cross Section (mb)",
         legend_title="Runs"
         )
         
@@ -1932,8 +1965,8 @@ class RunInfo :
         
         g.update_layout(
         title="best fit for cross section (total runs) + correlation + error bar",
-        xaxis_title='Lumi Bin',
-        yaxis_title="Cross Section",
+        xaxis_title='Lumi Bin (1/mb 1/25ns)',
+        yaxis_title="Cross Section (mb)",
         legend_title="Runs"
         )
         
@@ -1948,12 +1981,13 @@ class RunInfo :
     
     def aggregateFitRes4(self):
         g = make_subplots(self.nLumiBins, cols=1,
-                         subplot_titles = ['Lumi bin = {0}'.format(i+1) for i in np.arange(len(self.lumi_hists))]
+                         subplot_titles = ["Lumi bin = ({0:.3f} , {1:.3f}) (1/nb 1/s) ".format(lh.min*40 , lh.max*40) for lh in self.lumi_hists]
                          )
-        g.update_layout(height=self.nLumiBins*400, width=1200, title_text="best xsection values per lumi bin",legend_title="Luminosity bins")
+        g.update_layout(height=self.nLumiBins*400, width=1200, title_text="best xsection values per lumi bin for PU",legend_title="Luminosity bins (1/nb 1/s)")
         m = 1
         for i in range(self.nLumiBins):
-            theName = "Lumi bin = {0}".format(m)
+            lh = self.lumi_hists[i]
+            theName = "Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
             m += 1
             lval = float(self.lumi_hists[i].max+self.lumi_hists[i].min)/2 
 
@@ -2009,7 +2043,7 @@ class RunInfo :
         
         
         
-        g.update_yaxes(title_text= "Cross Sections" )
+        g.update_yaxes(title_text= "Cross Sections (mb)" )
         g.update_xaxes(title_text="PU")
         
         return g
