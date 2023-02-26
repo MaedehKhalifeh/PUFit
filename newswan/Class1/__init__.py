@@ -1012,8 +1012,9 @@ class RunInfo :
         self._covmatrix = []
         
         ####
-        
+
 #         print('lumi quantiles = {0}'.format(lumi_quantiles))
+#         print('lumi vals = {0}'.format(lumi_vals))
 #         print('lumi limits = {0}'.format(lumi_limits))
         
         
