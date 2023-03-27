@@ -1353,10 +1353,10 @@ class RunInfo :
             
     
     def plotPUDists(self , xsec:float , g=None) :
-
+        i=0
         for lh in self.lumi_hists:
-            theName = "Lumi bin = ({0:.3f} , {1:.3f}) ".format(lh.min*40 , lh.max*40)
-            
+            theName = "Lumi bin {0}= ({1:.3f} , {2:.3f}) ".format(i+1,lh.min*40 , lh.max*40)
+            i+=1
             
             if g is None:
                 g = lh.PUDist.plot(param=xsec , scatterOpts={'name' : theName})
@@ -1367,8 +1367,18 @@ class RunInfo :
         xaxis_title='number of PU',
         yaxis_title="probability",
         legend_title= 'Luminosity bins (1/nb 1/s)',
-        font_family="Serif", font_size=14
-        )                
+        font_family="Serif", 
+        font_size=14,
+        plot_bgcolor='white',
+        width=1000,
+        height=500,
+        font = dict(
+        size = 14 ,
+        color = 'black'
+            )
+            )
+        g.update_xaxes(gridcolor='lightgrey')
+        g.update_yaxes(gridcolor='lightgrey')                
         return g
     
     
@@ -1403,11 +1413,19 @@ class RunInfo :
         g.update_layout(
         title=' {0} distribution for {1} different lumi bins'.format(self._vname , n),
         legend_title="Runs",
-        )
+        font_size=14,
+        plot_bgcolor='white',
+        width=1000,
+        height=500,
+        font = dict(
+        size = 14 ,
+        color = 'black'
+            )
+            )
 
         for dh in self.data_hists:
-            g.update_yaxes(title_text= "Number of Events" )
-            g.update_xaxes(title_text=self._vname)
+            g.update_yaxes(title_text= "Number of Events" , gridcolor='lightgrey' )
+            g.update_xaxes(title_text=self._vname , gridcolor='lightgrey')
         
         
         return g
@@ -1445,10 +1463,18 @@ class RunInfo :
         fig.update_layout(
         title="{0} prediction for different cross sections in {1} different lumi bins ".format( self._vname , self.nLumiBins),
         legend_title="Different Cross Sections (mb)",
-        )
+        font_size=14,
+        plot_bgcolor='white',
+        width=1000,
+        height=500,
+        font = dict(
+        size = 14 ,
+        color = 'black'
+            )
+            )
 
-        fig.update_yaxes(title_text="Probability")
-        fig.update_xaxes(title_text=self._vname)
+        fig.update_yaxes(title_text="Probability" , gridcolor='lightgrey')
+        fig.update_xaxes(title_text=self._vname , gridcolor='lightgrey')
         return fig
 
     
